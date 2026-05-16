@@ -1,0 +1,98 @@
+{
+	"name": "pl_http",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.p_files",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "JsonSource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "JsonReadSettings"
+									}
+								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_json",
+									"type": "DatasetReference",
+									"parameters": {
+										"p_filename": {
+											"value": "@concat(\n    'anshlambagit/Uber_Data_Engineer_Project/refs/heads/main/Data/',\n    item(),'.json'\n)",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_jsonsink",
+									"type": "DatasetReference",
+									"parameters": {
+										"p_filename": {
+											"value": "@concat(item(),'.json')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"p_files": {
+				"type": "array",
+				"defaultValue": [
+					"map_cities",
+					"map_cancellation_reasons",
+					"bulk_rides",
+					"map_payment_methods",
+					"map_ride_statuses",
+					"map_vehicle_makes",
+					"map_vehicle_types"
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2026-05-14T17:01:14Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
